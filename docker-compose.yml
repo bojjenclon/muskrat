@@ -1,0 +1,81 @@
+services:
+  proxy:
+    image: nginx:stable-alpine
+    restart: unless-stopped
+    ports:
+      - "4000:80"
+    volumes:
+      - ./proxy:/etc/nginx/conf.d/
+    networks:
+      - dev
+    
+  postgres:
+    image: postgres
+    restart: unless-stopped
+    shm_size: 128mb
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: muskrat
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - .docker/init_db.sql:/docker-entrypoint-initdb.d/
+    networks:
+      - dev
+
+  pgadmin:
+    image: dpage/pgadmin4
+    depends_on:
+      - postgres
+    ports:
+      - "5050:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: password
+    restart: unless-stopped
+    networks:
+      - dev
+
+  backend:
+    build:
+      context: ./be
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+      - "8800:8800"
+    depends_on:
+      - postgres
+    volumes:
+      - ./be:/app
+      - gradle:/home/spring/.gradle
+    restart: unless-stopped
+    command: sh start.sh
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/muskrat
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: password
+    networks:
+      - dev
+
+  frontend:
+    build:
+      context: ./fe
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./fe:/app
+      - node_modules:/app/node_modules
+    command: npm run dev
+    networks:
+      - dev
+        
+volumes:
+  postgres-data:
+  gradle:
+  node_modules:
+
+networks:
+  dev:
+    driver: bridge
