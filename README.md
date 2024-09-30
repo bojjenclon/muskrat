@@ -10,7 +10,8 @@ Tired of a certain "free speech" tyrant's social media? Want something fresh, ye
 * [Spring Boot](https://spring.io/projects/spring-boot)
 * [React](https://react.dev/)
 * [Tailwind](https://tailwindcss.com/)
-* [Flowbite](https://flowbite.com/)
+* [Headless UI](https://headlessui.com/)
+* [Meraki UI](https://merakiui.com/)
 
 ## attribution
 
