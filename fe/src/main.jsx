@@ -30,7 +30,7 @@ const router = createBrowserRouter([
     element: <ProtectedRoutes />,
     children: [
       {
-        path: '/feed',
+        path: '/feed/:feedId?',
         element: <FeedPage />,
       },
     ]

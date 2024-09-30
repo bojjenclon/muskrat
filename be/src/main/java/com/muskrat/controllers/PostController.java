@@ -5,8 +5,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,11 +16,22 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.muskrat.assemblers.PostModelAssembler;
 import com.muskrat.models.Post;
-import com.muskrat.models.User;
 import com.muskrat.repositories.PostRepository;
+import com.muskrat.repositories.UserRepository;
 
 class PostRequest {
+  private Long userId;
+
   private String text;
+
+  public Long getUserId() {
+    return userId;
+  }
+
+  public PostRequest setUserId(Long userId) {
+    this.userId = userId;
+    return this;
+  }
 
   public String getText() {
     return text;
@@ -38,58 +47,53 @@ class PostRequest {
 @RestController
 @EnableJpaAuditing
 public class PostController {
-  private final PostRepository repository;
+  private final UserRepository userRepository;
+  private final PostRepository postRepository;
   private final PostModelAssembler assembler;
 
-  PostController(PostRepository repository) {
-    this.repository = repository;
+  PostController(UserRepository userRepository, PostRepository postRepository) {
+    this.userRepository = userRepository;
+    this.postRepository = postRepository;
     this.assembler = new PostModelAssembler();
   }
 
-  private ResponseEntity<?> getRecentPosts() {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    User currentUser = (User) authentication.getPrincipal();
-    return ResponseEntity.ok(repository
-        .getPagedPosts(currentUser.getId(), PageRequest.of(0, 25, Sort.by(Sort.Direction.DESC, "createdAt")))
+  private ResponseEntity<?> getRecentPosts(Long userId) {
+    return ResponseEntity.ok(postRepository
+        .getPagedPosts(userId, PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "createdAt")))
         .getContent());
   }
 
-  @PostMapping("/new")
-  public ResponseEntity<?> newPost(@RequestBody PostRequest req) {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    User currentUser = (User) authentication.getPrincipal();
-    repository.save(new Post(currentUser, req.getText()));
-    return getRecentPosts();
+  @PostMapping("/{userId}/new")
+  public ResponseEntity<?> newPost(@PathVariable Long userId, @RequestBody PostRequest req) {
+    postRepository.save(new Post(userRepository.findById(userId).get(), req.getText()));
+    return getRecentPosts(userId);
   }
 
   @GetMapping("/{id}")
   public EntityModel<Post> one(Long id) {
-    Post post = repository.findById(id)
+    Post post = postRepository.findById(id)
         .orElseThrow(() -> new RuntimeException("Post with id " + id + " not found"));
     return assembler.toModel(post);
   }
 
-  @GetMapping("/")
-  public ResponseEntity<?> all() {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    User currentUser = (User) authentication.getPrincipal();
-    return ResponseEntity.ok(repository.getPosts(currentUser.getId(), Sort.by(Sort.Direction.DESC, "createdAt")));
+  @GetMapping("/{userId}")
+  public ResponseEntity<?> all(@RequestBody Long userId) {
+    return ResponseEntity.ok(postRepository.getPosts(userId, Sort.by(Sort.Direction.DESC, "createdAt")));
   }
 
-  @GetMapping("/pageable")
+  @GetMapping("/{userId}/pageable")
   public ResponseEntity<?> pageable(
+      @PathVariable Long userId,
       @RequestParam(defaultValue = "0") final Integer pageNumber,
-      @RequestParam(defaultValue = "25") final Integer size) {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    User currentUser = (User) authentication.getPrincipal();
-    return ResponseEntity.ok(repository
-        .getPagedPosts(currentUser.getId(), PageRequest.of(pageNumber, size, Sort.by(Sort.Direction.DESC, "createdAt")))
+      @RequestParam(defaultValue = "10") final Integer size) {
+    return ResponseEntity.ok(postRepository
+        .getPagedPosts(userId, PageRequest.of(pageNumber, size, Sort.by(Sort.Direction.DESC, "createdAt")))
         .getContent());
   }
 
-  @DeleteMapping("/{id}")
-  public ResponseEntity<?> deletePost(@PathVariable Long id) {
-    repository.deleteById(id);
-    return getRecentPosts();
+  @DeleteMapping("/{userId}/{id}")
+  public ResponseEntity<?> deletePost(@PathVariable Long userId, @PathVariable Long id) {
+    postRepository.deleteById(id);
+    return getRecentPosts(userId);
   }
 }
