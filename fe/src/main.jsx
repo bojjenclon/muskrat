@@ -68,7 +68,7 @@ const router = createBrowserRouter([
     children: [
       {
         path: '/',
-        element: <HomePage />,
+        element: <FeedPage />,
       },
       {
         path: '/feed/:feedId?',

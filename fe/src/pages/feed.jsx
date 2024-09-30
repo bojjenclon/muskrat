@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { baseStore } from '@/data/store'
 import { useParams } from 'react-router-dom'
-import { Button } from '@headlessui/react'
+import { Button, Textarea } from '@headlessui/react'
 import Layout from '@/layout'
 import { fetchAuth } from '@/utils/common'
 import moment from 'moment'
@@ -30,6 +30,7 @@ const FeedPage = () => {
   const [userId, setUserId] = useState((typeof feedId === 'string') ? parseInt(feedId, 10) : currentUser.id)
   const [viewedUser, setViewedUser] = useState(null)
   const isCurrentUser = userId === currentUser.id
+  const [canPost, setCanPost] = useState(true)
 
   useEffect(() => {
     if (feedId === undefined) {
@@ -135,15 +136,31 @@ const FeedPage = () => {
                 <div className='flex-1 flex items-center'>
                   <span className='font-bold'>Following</span>
                 </div>
-                <div className='w-auto h-[4px] bg-cyan-600 rounded-full'></div>
+                <div className='w-auto h-[4px] bg-sky-500 opacity-90 rounded-full'></div>
               </span>
             </Button>
           </div>
         
-          <div className='flex flex-col gap-2 border border-zinc-700 border-b-0 p-[8px]'>
-            <textarea className='bg-transparent resize-none !border-0 !border-transparent' id='post-content' placeholder={`What's on your mind?`} minLength={1} maxLength={255} rows={6} ref={postContentRef} />
+          <div className='flex flex-col gap-2 border border-zinc-700 border-b-0 p-[10px]'>
+            <Textarea
+              className='p-[12px] bg-transparent text-lg resize-none border-0 border-transparent data-[focus]:outline-none'
+              id='post-content'
+              placeholder={`What's on your mind?`}
+              minLength={1}
+              maxLength={255}
+              rows={6}
+              ref={postContentRef}
+              onChange={(evt) => setCanPost(evt.target.value.length > 0)}
+            />
+
             <div className='w-full flex justify-end'>
-              <Button className='px-[20px] py-[6px] bg-cyan-600 rounded-full font-bold' onClick={onSubmit}>Post</Button>
+              <Button
+                className='px-[20px] py-[6px] bg-sky-500 rounded-full font-bold data-[disabled]:bg-sky-800 data-[disabled]:text-slate-300'
+                disabled={!canPost}
+                onClick={onSubmit}
+              >
+                Post
+              </Button>
             </div>
           </div>
         </>
