@@ -1,4 +1,4 @@
-# personal-java-react
+# muskrat
 
 Tired of a certain "free speech" tyrant's social media? Want something fresh, yet _oddly_ similar? Look no further! Muskrat is the hottest social media since logos were blue birds!
 
