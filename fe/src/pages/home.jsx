@@ -1,5 +1,6 @@
 import React, { useCallback } from 'react'
 import Cookies from 'js-cookie'
+import { Button } from '@headlessui/react'
 import { Layout } from '@/layout'
 import { useNavigate } from 'react-router-dom'
 import { fetchAuth } from '@/utils/common'
@@ -28,9 +29,9 @@ const HomePage = () => {
   return (
     <Layout>
       <div className='mt-16 flex gap-6'>
-        {!isLoggedIn && <button onClick={() => navigate('/login')}>Login</button>}
-        {!isLoggedIn && <button onClick={() => navigate('/register')}>Register</button>}
-        {isLoggedIn && <button onClick={onLogout}>Logout</button>}
+        {!isLoggedIn && <Button onClick={() => navigate('/login')}>Login</Button>}
+        {!isLoggedIn && <Button onClick={() => navigate('/register')}>Register</Button>}
+        {isLoggedIn && <Button onClick={onLogout}>Logout</Button>}
       </div>
     </Layout>
   )

@@ -1,7 +1,7 @@
 import React from 'react'
 import { useForm } from 'react-hook-form'
-import { Button, Label, TextInput } from 'flowbite-react'
 import { useNavigate } from 'react-router-dom'
+import { Button, Input, Label, Field } from '@headlessui/react'
 import Layout from '@/layout'
 
 const RegisterPage = () => {
@@ -28,23 +28,35 @@ const RegisterPage = () => {
 
   return (
     <Layout hideSidebar>
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form className='w-1/2 mx-auto mt-[48px]' onSubmit={handleSubmit(onSubmit)}>
         <div className='flex flex-col gap-[20px]'>
-          <div className='flex flex-col gap-[4px]'>
-            <div className='block'>
-              <Label htmlFor='username' value='Username' />
-            </div>
-            <TextInput id='username' defaultValue='admin' {...register('username', { required: true })} />
-          </div>
+          <Field className='flex flex-col gap-[4px]'>
+            <Label className='font-bold mt-[4px] mb-[2px]' htmlFor='username'>Username</Label>
+            <Input
+              id='username'
+              className='p-[12px] bg-slate-900 text-white border border-slate-600 rounded-md'
+              {...register('username', { required: true })}
+            />
+          </Field>
 
-          <div className='flex flex-col gap-[4px]'>
-            <div className='block'>
-              <Label htmlFor='password' value='Password' />
-            </div>
-            <TextInput id='password' type='password' defaultValue='admin' {...register('password', { required: true })} />
-          </div>
+          <Field className='flex flex-col gap-[4px]'>
+            <Label className='font-bold mt-[4px] mb-[2px]' htmlFor='password'>Password</Label>
+            <Input
+              id='password'
+              className='p-[12px] bg-slate-900 text-white border border-slate-600 rounded-md'
+              type='password'
+              {...register('password', { required: true })}
+            />
+          </Field>
           
-          <Button type='submit'>Submit</Button>
+          <div className='flex justify-end'>
+            <Button
+              className='py-[8px] px-[24px] bg-emerald-950 border border-emerald-900 rounded-md'
+              type='submit'
+            >
+              Register
+            </Button>
+          </div>
         </div>
       </form>
     </Layout>

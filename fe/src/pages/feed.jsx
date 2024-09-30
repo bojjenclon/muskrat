@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { baseStore } from '@/data/store'
 import { useParams } from 'react-router-dom'
+import { Button } from '@headlessui/react'
 import Layout from '@/layout'
 import { fetchAuth } from '@/utils/common'
 import moment from 'moment'
-import { Card, Textarea } from 'flowbite-react'
 import { TbTrash } from 'react-icons/tb'
 
 const fetchPosts = async (id) => {
@@ -127,23 +127,23 @@ const FeedPage = () => {
       {isCurrentUser && (
         <>
           <div className='w-full flex border border-zinc-700 border-t-0 border-b-0'>
-            <button className='w-1/2 h-[48px] hover:bg-zinc-900 hover:cursor-pointer'>
+            <Button className='w-1/2 h-[48px] hover:bg-zinc-900 hover:cursor-pointer'>
               <span className='text-slate-500'>For you</span>
-            </button>
-            <button className='w-1/2 h-[48px] hover:bg-zinc-900 hover:cursor-pointer'>
+            </Button>
+            <Button className='w-1/2 h-[48px] hover:bg-zinc-900 hover:cursor-pointer'>
               <span className='h-full inline-flex flex-col flex-between'>
                 <div className='flex-1 flex items-center'>
                   <span className='font-bold'>Following</span>
                 </div>
                 <div className='w-auto h-[4px] bg-cyan-600 rounded-full'></div>
               </span>
-            </button>
+            </Button>
           </div>
         
           <div className='flex flex-col gap-2 border border-zinc-700 border-b-0 p-[8px]'>
-            <Textarea className='bg-transparent resize-none !border-0 !border-transparent' id='post-content' placeholder={`What's on your mind?`} minLength={1} maxLength={255} rows={6} ref={postContentRef} />
+            <textarea className='bg-transparent resize-none !border-0 !border-transparent' id='post-content' placeholder={`What's on your mind?`} minLength={1} maxLength={255} rows={6} ref={postContentRef} />
             <div className='w-full flex justify-end'>
-              <button className='px-[20px] py-[6px] bg-cyan-600 rounded-full font-bold' onClick={onSubmit}>Post</button>
+              <Button className='px-[20px] py-[6px] bg-cyan-600 rounded-full font-bold' onClick={onSubmit}>Post</Button>
             </div>
           </div>
         </>
@@ -157,10 +157,10 @@ const FeedPage = () => {
 
       <div className='flex flex-col'>
         {posts.map((post, idx) => (
-          <Card
+          <div
             key={post.id}
             className={
-              `bg-slate-black border-zinc-700 rounded-none`
+              `flex flex-col gap-[6px] p-6 bg-slate-black border border-zinc-700 rounded-none`
                 .concat(idx < posts.length - 1 ? ' border-b-0' : '')
             }
           >
@@ -168,12 +168,12 @@ const FeedPage = () => {
               <strong className='flex-1'>({moment(post.createdAt).format("DD-MM-yy h:mm A")})</strong>
               <div className='flex-0'>
                 {isCurrentUser && (
-                  <button onClick={() => deletePost(post.id)}><TbTrash className='w-4 h-4' color='red' /></button>
+                  <Button onClick={() => deletePost(post.id)}><TbTrash className='w-4 h-4' color='red' /></Button>
                 )}
               </div>
             </div>
             <p>{post.text}</p>
-          </Card>
+          </div>
         ))}
     
         {posts.length === 0 && (
