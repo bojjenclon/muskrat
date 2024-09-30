@@ -1,9 +1,5 @@
 package com.muskrat.controllers;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
-
-
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
@@ -50,14 +46,20 @@ public class PostController {
     this.assembler = new PostModelAssembler();
   }
 
+  private ResponseEntity<?> getRecentPosts() {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    User currentUser = (User) authentication.getPrincipal();
+    return ResponseEntity.ok(repository
+        .getPagedPosts(currentUser.getId(), PageRequest.of(0, 25, Sort.by(Sort.Direction.DESC, "createdAt")))
+        .getContent());
+  }
+
   @PostMapping("/new")
   public ResponseEntity<?> newPost(@RequestBody PostRequest req) {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     User currentUser = (User) authentication.getPrincipal();
     repository.save(new Post(currentUser, req.getText()));
-    return ResponseEntity.ok(repository
-      .getPagedPosts(currentUser.getId(), PageRequest.of(0, 25, Sort.by(Sort.Direction.DESC, "createdAt")))
-      .getContent());
+    return getRecentPosts();
   }
 
   @GetMapping("/{id}")
@@ -86,7 +88,8 @@ public class PostController {
   }
 
   @DeleteMapping("/{id}")
-  public void deletePost(@PathVariable Long id) {
+  public ResponseEntity<?> deletePost(@PathVariable Long id) {
     repository.deleteById(id);
+    return getRecentPosts();
   }
 }
