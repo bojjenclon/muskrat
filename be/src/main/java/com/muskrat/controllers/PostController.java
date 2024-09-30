@@ -51,14 +51,13 @@ public class PostController {
   }
 
   @PostMapping("/new")
-  public ResponseEntity<Post> newPost(@RequestBody PostRequest req) {
+  public ResponseEntity<?> newPost(@RequestBody PostRequest req) {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     User currentUser = (User) authentication.getPrincipal();
-
-    Post savedPost = repository.save(new Post(currentUser, req.getText()));
-    return ResponseEntity
-        .created(linkTo(methodOn(PostController.class).one(savedPost.getId())).toUri())
-        .body(savedPost);
+    repository.save(new Post(currentUser, req.getText()));
+    return ResponseEntity.ok(repository
+      .getPagedPosts(currentUser.getId(), PageRequest.of(0, 25, Sort.by(Sort.Direction.DESC, "createdAt")))
+      .getContent());
   }
 
   @GetMapping("/{id}")

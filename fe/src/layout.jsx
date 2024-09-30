@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 
 export const Layout = ({ children }) => {
   return (
-    <div className='w-[640px] mx-auto mt-[48px]'>
+    <div className='w-[640px] mx-auto mt-[36px] mb-[10px]'>
       {children}
     </div>
   )
