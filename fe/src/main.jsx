@@ -1,5 +1,5 @@
 import './index.css'
-import React, { StrictMode } from 'react'
+import React, { StrictMode, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import {
   createBrowserRouter,
@@ -13,8 +13,12 @@ import LoginPage from './pages/login'
 import FeedPage from './pages/feed'
 import { fetchAuth } from '@/utils/common'
 import { baseStore } from '@/data/store'
+import RegisterPage from './pages/register'
 
 const ProtectedRoutes = () => {
+  const [isReady, setIsReady] = useState(false)
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+
   const xsrfToken = Cookies.get('XSRF-TOKEN')
   const hasToken = !!xsrfToken
 
@@ -27,6 +31,7 @@ const ProtectedRoutes = () => {
       if (res.ok) {
         const data = await res.json()
         baseStore.login(data)
+        setIsLoggedIn(true)
       }
     }
     
@@ -34,25 +39,37 @@ const ProtectedRoutes = () => {
       .catch((err) => {
         console.error(err)
       })
+      .finally(() => {
+        setIsReady(true)
+      })
   } else {
     baseStore.logout()
+    setIsReady(true)
   }
 
-  return xsrfToken ? <Outlet /> : <Navigate to="/login" />
+  if (!isReady) {
+    return <></>
+  }
+
+  return isLoggedIn ? <Outlet /> : <Navigate to="/login" />
 }
 
 const router = createBrowserRouter([
-  {
-    path: '/',
-    element: <HomePage />,
-  },
   {
     path: '/login',
     element: <LoginPage />,
   },
   {
+    path: '/register',
+    element: <RegisterPage />,
+  },
+  {
     element: <ProtectedRoutes />,
     children: [
+      {
+        path: '/',
+        element: <HomePage />,
+      },
       {
         path: '/feed/:feedId?',
         element: <FeedPage />,

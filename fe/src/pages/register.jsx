@@ -2,26 +2,28 @@ import React from 'react'
 import { useForm } from 'react-hook-form'
 import { Button, Label, TextInput } from 'flowbite-react'
 import { useNavigate } from 'react-router-dom'
-import Cookies from 'js-cookie'
 import Layout from '@/layout'
 
-const LoginPage = () => {
+const RegisterPage = () => {
   const { register, handleSubmit } = useForm()
   const navigate = useNavigate();
 
   const onSubmit = (data) => {
-    fetch(`${location.origin}/api/auth/login`, {
+    fetch(`${location.origin}/api/auth/register`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify(data)
     })
-      .then(async (res) => (res.json()))
-      .then(({ token, expiresIn }) => {
-        Cookies.set('XSRF-TOKEN', token, { expires: expiresIn })
-        navigate('/')
-      });
+      .then((res) => {
+        if (res.status === 200) {
+          navigate('/login')
+        }
+      })
+      .catch((err) => {
+        console.error(err)
+      })
   }
 
   return (
@@ -49,4 +51,4 @@ const LoginPage = () => {
   )
 }
 
-export default LoginPage
+export default RegisterPage

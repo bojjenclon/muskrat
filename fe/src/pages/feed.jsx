@@ -27,7 +27,7 @@ const FeedPage = () => {
   const { feedId } = useParams()
   
   const currentUser = baseStore.useStore((state) => state.user)
-  const [userId, setUserId] = useState((typeof feedId === 'number') ? parseInt(feedId, 10) : currentUser.id)
+  const [userId, setUserId] = useState((typeof feedId === 'string') ? parseInt(feedId, 10) : currentUser.id)
   const isCurrentUser = userId === currentUser.id
 
   useEffect(() => {
@@ -143,6 +143,12 @@ const FeedPage = () => {
             <p>{post.text}</p>
           </Card>
         ))}
+    
+        {posts.length === 0 && (
+          <div className='w-full h-full flex justify-center items-center p-8 border border-zinc-700'>
+            <p>No posts yet</p>
+          </div>
+        )}
       </div>
     </Layout>
   )

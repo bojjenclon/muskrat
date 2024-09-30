@@ -10,27 +10,6 @@ const HomePage = () => {
 
   const isLoggedIn = baseStore.useStore((state) => state.loggedIn)
 
-  const onRegister = useCallback(() => {
-    fetch(`${location.origin}/api/auth/register`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        username: 'admin',
-        password: 'admin'
-      })
-    })
-      .then((res) => {
-        if (res.status === 200) {
-          console.log('Registered')
-        }
-      })
-      .catch((err) => {
-        console.error(err)
-      })
-  }, []);
-
   const onLogout = useCallback(() => {
     fetchAuth(`${location.origin}/api/auth/logout`, {
       method: 'POST'
@@ -50,7 +29,7 @@ const HomePage = () => {
     <Layout>
       <div className='mt-16 flex gap-6'>
         {!isLoggedIn && <button onClick={() => navigate('/login')}>Login</button>}
-        {!isLoggedIn && <button onClick={onRegister}>Register</button>}
+        {!isLoggedIn && <button onClick={() => navigate('/register')}>Register</button>}
         {isLoggedIn && <button onClick={onLogout}>Logout</button>}
       </div>
     </Layout>
