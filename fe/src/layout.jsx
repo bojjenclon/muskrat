@@ -35,10 +35,11 @@ export const Layout = ({ children }) => {
             <button
               className={
                 'flex items-center gap-[14px] pl-3 pr-6 py-2 self-start text-xl hover:bg-zinc-900 hover:rounded-full hover:cursor-pointer'
+                  .concat(pathname === '/notifications' ? ' font-bold' : '')
               }
               onClick={() => navigate('/')}
             >
-              <TbBell className="h-[28px] w-[28px]" />
+              {pathname === '/notifications' ? <TbBellFilled className="h-[28px] w-[28px]" /> : <TbBell className="h-[28px] w-[28px]" />}
               <span>Notifications</span>
             </button>
 

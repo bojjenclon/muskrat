@@ -1,27 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { baseStore } from '@/data/store'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import Layout from '@/layout'
 import { fetchAuth } from '@/utils/common'
 import moment from 'moment'
-import { Button, Card, Textarea } from 'flowbite-react'
+import { Card, Textarea } from 'flowbite-react'
 import { TbTrash } from 'react-icons/tb'
-
-const fetchUser = async (id) => {
-  if (id === undefined) {
-    return Promise.resolve(undefined)
-  }
-
-  const res = await fetchAuth(`${location.origin}/api/users/${id}`, {
-    method: 'GET',
-  })
-
-  if (res.ok) {
-    return await res.json()
-  }
-
-  return Promise.resolve(undefined)
-}
 
 const fetchPosts = async (id) => {
   if (id === undefined) {
@@ -41,7 +25,6 @@ const fetchPosts = async (id) => {
 
 const FeedPage = () => {
   const { feedId } = useParams()
-  const navigate = useNavigate()
   
   const currentUser = baseStore.useStore((state) => state.user)
   const [userId, setUserId] = useState((typeof feedId === 'number') ? parseInt(feedId, 10) : currentUser.id)
@@ -53,7 +36,6 @@ const FeedPage = () => {
     }
   }, [feedId, currentUser])
   
-  const [user, setUser] = useState({})
   const [posts, setPosts] = useState([])
   const postContentRef = useRef()
   
@@ -71,18 +53,6 @@ const FeedPage = () => {
     
     firstLoad.current = false
   }
-
-  useEffect(() => {
-    fetchUser(userId)
-      .then((data) => {
-        if (data) {
-          setUser(data)
-        }
-      })
-      .catch((err) => {
-        console.error(err)
-      })
-  }, [userId])
   
   useEffect(() => {
     const interval = setInterval(() => {

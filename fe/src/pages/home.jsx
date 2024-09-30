@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react'
+import React, { useCallback } from 'react'
 import Cookies from 'js-cookie'
 import { Layout } from '@/layout'
 import { useNavigate } from 'react-router-dom'
@@ -8,31 +8,7 @@ import { baseStore } from '@/data/store'
 const HomePage = () => {
   const navigate = useNavigate()
 
-  const xsrfToken = Cookies.get('XSRF-TOKEN')
   const isLoggedIn = baseStore.useStore((state) => state.loggedIn)
-  
-  useEffect(() => {
-    const hasToken = !!xsrfToken
-    if (hasToken) {
-      const fetchUser = async () => {
-        const res = await fetchAuth(`${location.origin}/api/users/current`, {
-          method: 'GET'
-        })
-
-        if (res.ok) {
-          const data = await res.json()
-          baseStore.login(data)
-        }
-      }
-      
-      fetchUser()
-        .catch((err) => {
-          console.error(err)
-        })
-    } else {
-      baseStore.logout()
-    }
-  }, [xsrfToken]);
 
   const onRegister = useCallback(() => {
     fetch(`${location.origin}/api/auth/register`, {
