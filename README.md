@@ -2,7 +2,7 @@
 
 Tired of a certain "free speech" tyrant's social media? Want something fresh, yet _oddly_ similar? Look no further! Muskrat is the hottest social media since logos were blue birds!
 
-![Muskrat preview](puskrat_preview.png)
+![Muskrat preview](muskrat_preview.png)
 
 ## tech-stack
 
